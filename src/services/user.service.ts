@@ -1,15 +1,23 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from '../dto/user/create-user.dto';
 import { UpdateUserDto } from '../dto/user/update-user.dto';
+import { UserLockRelationService } from './user-lock-relation.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @Inject(forwardRef(() => UserLockRelationService))
+    private readonly userLockRelationService: UserLockRelationService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -61,7 +69,8 @@ export class UserService {
   }
 
   async remove(userEmail: string) {
-    await this.findByEmail(userEmail);
+    const user = await this.findByEmail(userEmail);
+    await this.userLockRelationService.removeAllUserRelations(user.id);
     await this.userRepository.delete({ email: userEmail });
   }
 }

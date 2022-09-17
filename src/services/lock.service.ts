@@ -1,7 +1,11 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateLockDto } from '../dto/lock/create-lock.dto';
 import { UpdateLockDto } from '../dto/lock/update-lock.dto';
-import { plainToInstance } from 'class-transformer';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Lock } from 'src/entities/lock.entity';
@@ -12,7 +16,7 @@ export class LockService {
   constructor(
     @InjectRepository(Lock)
     private readonly lockRepository: Repository<Lock>,
-    @Inject(UserLockRelationService)
+    @Inject(forwardRef(() => UserLockRelationService))
     private readonly userLockRelationService: UserLockRelationService,
   ) {}
 
@@ -29,20 +33,14 @@ export class LockService {
     return `This action returns all lock`;
   }
 
-  async findByName(name: string) {
-    const lock = await this.lockRepository.findOne({ where: { name } });
-    if (!lock) throw new NotFoundException('Lock not found');
-    return lock;
-  }
-
   async findByID(id: string) {
     const lock = await this.lockRepository.findOne({ where: { id } });
     if (!lock) throw new NotFoundException('Lock not found');
     return lock;
   }
 
-  async update(lockName: string, updateLockDto: UpdateLockDto) {
-    const lock = await this.findByName(lockName);
+  async update(lockID: string, updateLockDto: UpdateLockDto) {
+    const lock = await this.findByID(lockID);
     const updatedLock: Lock = {
       id: lock.id,
       websocket: updateLockDto.websocket || lock.websocket,
@@ -56,16 +54,17 @@ export class LockService {
 
   async sendUnlockEvent() {}
 
-  async unlock(lockName: string, userEmail: string) {
-    await this.userLockRelationService.findRelation(userEmail, lockName);
-    const lock = await this.findByName(lockName);
+  async unlock(lockID: string, userEmail: string) {
+    await this.userLockRelationService.findRelation(userEmail, lockID);
+    const lock = await this.findByID(lockID);
     await this.sendUnlockEvent();
     await new Promise((resolve) => setTimeout(resolve, 6000));
     await this.sendLockEvent();
   }
 
-  async remove(lockName: string) {
-    await this.findByName(lockName);
-    await this.lockRepository.delete({ name: lockName });
+  async remove(lockID: string) {
+    await this.findByID(lockID);
+    await this.userLockRelationService.removeAllLockRelations(lockID);
+    await this.lockRepository.delete({ id: lockID });
   }
 }

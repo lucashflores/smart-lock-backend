@@ -7,10 +7,20 @@ import { User } from '../entities/user.entity';
 import { UserModule } from './user.module';
 import { UserService } from 'src/services/user.service';
 import { UserController } from 'src/controllers/user.controller';
+import { LockController } from 'src/controllers/lock.controller';
+import { LockService } from 'src/services/lock.service';
+import { UserLockRelationService } from 'src/services/user-lock-relation.service';
+import { UserLockRelation } from 'src/entities/user-lock-relation.entity';
+import { Lock } from 'src/entities/lock.entity';
+import { LockModule } from './lock.module';
+import { UserLockRelationModule } from './user-lock-relation.module';
+import { UserLockRelationController } from 'src/controllers/user-lock-relation.controller';
 
 @Module({
   imports: [
     UserModule,
+    LockModule,
+    UserLockRelationModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: './config/.env',
@@ -21,14 +31,19 @@ import { UserController } from 'src/controllers/user.controller';
       username: process.env.PGUSER,
       password: '',
       port: +process.env.PGPORT,
-      entities: [User],
+      entities: [User, Lock, UserLockRelation],
       database: process.env.PGDATABASE,
       schema: 'smart_lock',
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Lock, UserLockRelation]),
   ],
-  controllers: [AppController, UserController],
-  providers: [AppService, UserService],
+  controllers: [
+    AppController,
+    UserController,
+    LockController,
+    UserLockRelationController,
+  ],
+  providers: [AppService, UserService, LockService, UserLockRelationService],
 })
 export class AppModule {}

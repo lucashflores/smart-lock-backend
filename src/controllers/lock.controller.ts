@@ -6,37 +6,40 @@ import {
   Patch,
   Param,
   Delete,
+  HttpCode,
+  Put,
 } from '@nestjs/common';
 import { LockService } from '../services/lock.service';
 import { CreateLockDto } from '../dto/lock/create-lock.dto';
 import { UpdateLockDto } from '../dto/lock/update-lock.dto';
 
-@Controller('lock')
+@Controller('v1/locks')
 export class LockController {
   constructor(private readonly lockService: LockService) {}
 
   @Post()
-  create(@Body() createLockDto: CreateLockDto) {
-    return this.lockService.create(createLockDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.lockService.findAll();
+  async create(@Body() createLockDto: CreateLockDto) {
+    return { status: 'OK', data: await this.lockService.create(createLockDto) };
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.lockService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return { status: 'OK', data: await this.lockService.findByID(id) };
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateLockDto: UpdateLockDto) {
-    return this.lockService.update(+id, updateLockDto);
+  @Post('/unlock/:id')
+  async unlock(@Param('id') id: string) {
+    await this.lockService.unlock(id, '');
+  }
+
+  @HttpCode(204)
+  @Put(':id')
+  async update(@Param('id') id: string, @Body() updateLockDto: UpdateLockDto) {
+    await this.lockService.update(id, updateLockDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.lockService.remove(+id);
+  async remove(@Param('id') id: string) {
+    await this.lockService.remove(id);
   }
 }

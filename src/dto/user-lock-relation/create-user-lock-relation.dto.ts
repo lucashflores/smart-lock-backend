@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsEmail,
   IsNotEmpty,
   isNumber,
@@ -14,16 +15,14 @@ import {
 export class CreateUserLockRelationDto {
   @IsString()
   @IsNotEmpty()
-  lockName: string;
+  lockID: string;
 
   @IsString()
   @IsEmail()
   @IsNotEmpty()
   userEmail: string;
 
-  @IsNumberString()
+  @IsBoolean()
   @IsOptional()
-  @MinLength(6)
-  @MaxLength(6)
-  token?: string;
+  owner: boolean;
 }

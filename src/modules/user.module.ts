@@ -3,10 +3,14 @@ import { UserService } from '../services/user.service';
 import { UserController } from '../controllers/user.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
+import { UserLockRelationService } from 'src/services/user-lock-relation.service';
+import { UserLockRelation } from 'src/entities/user-lock-relation.entity';
+import { LockService } from 'src/services/lock.service';
+import { Lock } from 'src/entities/lock.entity';
 
 @Module({
   controllers: [UserController],
-  imports: [TypeOrmModule.forFeature([User])],
-  providers: [UserService],
+  imports: [TypeOrmModule.forFeature([User, UserLockRelation, Lock])],
+  providers: [UserService, UserLockRelationService, LockService],
 })
 export class UserModule {}

@@ -1,12 +1,16 @@
 import { Module } from '@nestjs/common';
 import { UserLockRelationService } from '../services/user-lock-relation.service';
 import { UserLockRelationController } from '../controllers/user-lock-relation.controller';
-import { UserModule } from './user.module';
-import { LockModule } from './lock.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserLockRelation } from 'src/entities/user-lock-relation.entity';
+import { Lock } from 'src/entities/lock.entity';
+import { User } from 'src/entities/user.entity';
+import { LockService } from 'src/services/lock.service';
+import { UserService } from 'src/services/user.service';
 
 @Module({
   controllers: [UserLockRelationController],
-  imports: [UserModule, LockModule],
-  providers: [UserLockRelationService],
+  imports: [TypeOrmModule.forFeature([UserLockRelation, Lock, User])],
+  providers: [UserLockRelationService, LockService, UserService],
 })
 export class UserLockRelationModule {}

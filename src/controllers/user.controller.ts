@@ -6,6 +6,7 @@ import {
   Param,
   Delete,
   Put,
+  HttpCode,
 } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import { CreateUserDto } from '../dto/user/create-user.dto';
@@ -32,20 +33,24 @@ export class UserController {
   }
 
   @Get(':user_email')
-  findOne(@Param('user_email') userEmail: string) {
-    return this.userService.findByEmail(userEmail);
+  async findOne(@Param('user_email') userEmail: string) {
+    return {
+      status: 'OK',
+      data: await this.userService.findByEmail(userEmail),
+    };
   }
 
   @Put(':user_email')
-  update(
+  @HttpCode(204)
+  async update(
     @Param('user_email') userEmail: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return this.userService.update(userEmail, updateUserDto);
+    await this.userService.update(userEmail, updateUserDto);
   }
 
   @Delete(':user_email')
-  remove(@Param('user_email') userEmail: string) {
-    return this.userService.remove(userEmail);
+  async remove(@Param('user_email') userEmail: string) {
+    await this.userService.remove(userEmail);
   }
 }

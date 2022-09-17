@@ -3,45 +3,70 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
+  Query,
+  Put,
+  HttpCode,
 } from '@nestjs/common';
 import { UserLockRelationService } from '../services/user-lock-relation.service';
 import { CreateUserLockRelationDto } from '../dto/user-lock-relation/create-user-lock-relation.dto';
 import { UpdateUserLockRelationDto } from '../dto/user-lock-relation/update-user-lock-relation.dto';
 
-@Controller('user-lock-relation')
+@Controller('v1/relations')
 export class UserLockRelationController {
   constructor(
     private readonly userLockRelationService: UserLockRelationService,
   ) {}
 
-  @Post()
-  create(@Body() createUserLockRelationDto: CreateUserLockRelationDto) {
-    return this.userLockRelationService.create(createUserLockRelationDto);
+  @Post('')
+  async create(@Body() createUserLockRelationDto: CreateUserLockRelationDto) {
+    return {
+      status: 'OK',
+      data: await this.userLockRelationService.create(
+        createUserLockRelationDto,
+      ),
+    };
   }
 
-  @Get()
-  findAll() {
-    return this.userLockRelationService.findAll();
+  @Get('/user/:user_email')
+  async findAllUserLocks(@Param('user_email') userEmail: string) {
+    return {
+      status: 'OK',
+      data: await this.userLockRelationService.findAllUserLocks(userEmail),
+    };
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userLockRelationService.findOne(+id);
+  @Get('/lock/:lock_id')
+  async findAll(@Param('lock_id') lockID: string) {
+    return {
+      status: 'OK',
+      data: await this.userLockRelationService.findAllLockUsers(lockID),
+    };
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateUserLockRelationDto: UpdateUserLockRelationDto,
+  @Get('')
+  async findOne(
+    @Query('user-email') userEmail: string,
+    @Query('lock-id') lockID: string,
   ) {
-    return this.userLockRelationService.update(+id, updateUserLockRelationDto);
+    return {
+      status: 'OK',
+      data: await this.userLockRelationService.findRelation(userEmail, lockID),
+    };
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userLockRelationService.remove(+id);
+  @Put('')
+  @HttpCode(204)
+  async update(@Body() updateUserLockRelationDto: UpdateUserLockRelationDto) {
+    await this.userLockRelationService.update(updateUserLockRelationDto);
+  }
+
+  @Delete('')
+  async remove(
+    @Query('user-email') userEmail: string,
+    @Query('lock-id') lockID: string,
+  ) {
+    await this.userLockRelationService.remove(userEmail, lockID);
   }
 }
