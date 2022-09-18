@@ -10,6 +10,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Lock } from 'src/entities/lock.entity';
 import { UserLockRelationService } from './user-lock-relation.service';
+import { WebsocketService } from './websocket.service';
 
 @Injectable()
 export class LockService {
@@ -18,6 +19,8 @@ export class LockService {
     private readonly lockRepository: Repository<Lock>,
     @Inject(forwardRef(() => UserLockRelationService))
     private readonly userLockRelationService: UserLockRelationService,
+    @Inject(WebsocketService)
+    private readonly websocketService: WebsocketService,
   ) {}
 
   async create(createLockDto: CreateLockDto) {
@@ -50,9 +53,13 @@ export class LockService {
     await this.lockRepository.save(updatedLock);
   }
 
-  async sendLockEvent() {}
+  async sendLockEvent() {
+    await this.websocketService.sendEvent('lock');
+  }
 
-  async sendUnlockEvent() {}
+  async sendUnlockEvent() {
+    await this.websocketService.sendEvent('unlock');
+  }
 
   async unlock(lockID: string, userEmail: string) {
     await this.userLockRelationService.findRelation(userEmail, lockID);

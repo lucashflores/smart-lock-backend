@@ -7,10 +7,16 @@ import { UserLockRelationService } from 'src/services/user-lock-relation.service
 import { UserLockRelation } from 'src/entities/user-lock-relation.entity';
 import { LockService } from 'src/services/lock.service';
 import { Lock } from 'src/entities/lock.entity';
+import { WebsocketService } from 'src/services/websocket.service';
 
 @Module({
   controllers: [UserController],
   imports: [TypeOrmModule.forFeature([User, UserLockRelation, Lock])],
-  providers: [UserService, UserLockRelationService, LockService],
+  providers: [
+    UserService,
+    UserLockRelationService,
+    LockService,
+    WebsocketService,
+  ],
 })
 export class UserModule {}

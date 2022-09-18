@@ -15,12 +15,15 @@ import { Lock } from 'src/entities/lock.entity';
 import { LockModule } from './lock.module';
 import { UserLockRelationModule } from './user-lock-relation.module';
 import { UserLockRelationController } from 'src/controllers/user-lock-relation.controller';
+import { WebsocketModule } from './websocket.module';
+import { WebsocketService } from 'src/services/websocket.service';
 
 @Module({
   imports: [
     UserModule,
     LockModule,
     UserLockRelationModule,
+    WebsocketModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: './config/.env',
@@ -44,6 +47,12 @@ import { UserLockRelationController } from 'src/controllers/user-lock-relation.c
     LockController,
     UserLockRelationController,
   ],
-  providers: [AppService, UserService, LockService, UserLockRelationService],
+  providers: [
+    AppService,
+    UserService,
+    LockService,
+    UserLockRelationService,
+    WebsocketService,
+  ],
 })
 export class AppModule {}

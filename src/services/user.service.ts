@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { hash } from 'bcrypt';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from '../dto/user/create-user.dto';
@@ -21,10 +22,14 @@ export class UserService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
+    const password = await hash(
+      createUserDto.password,
+      process.env.SALT_ROUNDS,
+    );
     const newUser: Partial<User> = {
       email: createUserDto.email,
       name: createUserDto.name,
-      password: createUserDto.password,
+      password,
     };
     return await this.userRepository.save(newUser);
   }
@@ -57,11 +62,15 @@ export class UserService {
 
   async update(userEmail: string, updateUserDto: UpdateUserDto) {
     const user = await this.findByEmail(userEmail);
+    let newPassword = null;
+    if (updateUserDto.password) {
+      newPassword = await hash(updateUserDto.password, process.env.SALT_ROUNDS);
+    }
     const updatedUser: User = {
       id: user.id,
       email: updateUserDto.email || user.email,
       name: updateUserDto.name || user.name,
-      password: updateUserDto.password || user.password,
+      password: newPassword || user.password,
       fingerprint: updateUserDto.fingerprint || user.fingerprint,
       face: updateUserDto.face || user.face,
     };

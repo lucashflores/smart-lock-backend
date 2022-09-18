@@ -8,10 +8,16 @@ import { Repository } from 'typeorm';
 import { Lock } from 'src/entities/lock.entity';
 import { User } from 'src/entities/user.entity';
 import { UserService } from 'src/services/user.service';
+import { WebsocketService } from 'src/services/websocket.service';
 
 @Module({
   controllers: [LockController],
   imports: [TypeOrmModule.forFeature([Lock, UserLockRelation, User])],
-  providers: [LockService, UserLockRelationService, UserService],
+  providers: [
+    LockService,
+    UserLockRelationService,
+    UserService,
+    WebsocketService,
+  ],
 })
 export class LockModule {}
