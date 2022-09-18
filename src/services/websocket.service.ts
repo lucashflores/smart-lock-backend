@@ -17,6 +17,6 @@ export class WebsocketService implements OnGatewayInit {
 
   async sendEvent(event: string) {
     console.log(this.websocketServer.path);
-    this.websocketServer.emit(event);
+    this.websocketServer.emit('msgToClient', 'test');
   }
 }
