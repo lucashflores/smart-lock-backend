@@ -32,7 +32,7 @@ import { WebsocketService } from 'src/services/websocket.service';
       type: 'postgres',
       host: process.env.PGHOST,
       username: process.env.PGUSER,
-      password: '',
+      password: process.env.PGPASSWORD,
       port: +process.env.PGPORT,
       entities: [User, Lock, UserLockRelation],
       database: process.env.PGDATABASE,
