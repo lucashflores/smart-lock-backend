@@ -62,8 +62,8 @@ export class LockService {
   }
 
   async unlock(lockID: string, userEmail: string) {
-    await this.userLockRelationService.findRelation(userEmail, lockID);
-    const lock = await this.findByID(lockID);
+    // await this.userLockRelationService.findRelation(userEmail, lockID);
+    // const lock = await this.findByID(lockID);
     await this.sendUnlockEvent();
     await new Promise((resolve) => setTimeout(resolve, 6000));
     await this.sendLockEvent();
