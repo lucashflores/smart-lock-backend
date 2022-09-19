@@ -16,7 +16,7 @@ export class CreateUserDto {
   @IsNotEmpty({ message: 'email cannot be empty' })
   email: string;
 
-  @IsString({ message: 'password must be a string' }) y;
+  @IsString({ message: 'password must be a string' })
   @Matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/, {
     message: 'password too weak',
   })

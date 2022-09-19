@@ -6,8 +6,16 @@ import { AppService } from '../services/app.service';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Post()
+  @Get('/health')
+  health() {
+    return { status: 'OK', description: 'Server Running' };
+  }
+
+  @Post('/authenticate')
   async authenticate(@Body() authDTO: AuthDTO) {
-    return { status: 'OK', data: await this.appService.authenticate(authDTO) };
+    return {
+      status: 'OK',
+      authenticated: await this.appService.authenticate(authDTO),
+    };
   }
 }

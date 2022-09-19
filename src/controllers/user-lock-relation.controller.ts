@@ -12,6 +12,7 @@ import {
 import { UserLockRelationService } from '../services/user-lock-relation.service';
 import { CreateUserLockRelationDto } from '../dto/user-lock-relation/create-user-lock-relation.dto';
 import { UpdateUserLockRelationDto } from '../dto/user-lock-relation/update-user-lock-relation.dto';
+import { FindUserLockRelationDTO } from 'src/dto/user-lock-relation/find-user-lock-relation.dto';
 
 @Controller('v1/relations')
 export class UserLockRelationController {
@@ -46,13 +47,12 @@ export class UserLockRelationController {
   }
 
   @Get('')
-  async findOne(
-    @Query('user-email') userEmail: string,
-    @Query('lock-id') lockID: string,
-  ) {
+  async findOne(@Query() findUserLockRelationDTO: FindUserLockRelationDTO) {
     return {
       status: 'OK',
-      data: await this.userLockRelationService.findRelation(userEmail, lockID),
+      data: await this.userLockRelationService.findRelation(
+        findUserLockRelationDTO,
+      ),
     };
   }
 
@@ -63,10 +63,7 @@ export class UserLockRelationController {
   }
 
   @Delete('')
-  async remove(
-    @Query('user-email') userEmail: string,
-    @Query('lock-id') lockID: string,
-  ) {
-    await this.userLockRelationService.remove(userEmail, lockID);
+  async remove(@Query() findUserLockRelationDTO: FindUserLockRelationDTO) {
+    await this.userLockRelationService.remove(findUserLockRelationDTO);
   }
 }

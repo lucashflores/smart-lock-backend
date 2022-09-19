@@ -12,6 +12,7 @@ import { UserService } from './user.service';
 import { LockService } from './lock.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { FindUserLockRelationDTO } from 'src/dto/user-lock-relation/find-user-lock-relation.dto';
 
 @Injectable()
 export class UserLockRelationService {
@@ -34,7 +35,7 @@ export class UserLockRelationService {
       userID: user.id,
       owner: createUserLockRelationDto.owner || false,
     };
-    await this.userLockRelationRepository.save(relation);
+    return await this.userLockRelationRepository.save(relation);
   }
 
   async findAllLockUsers(lockID: string) {
@@ -43,10 +44,13 @@ export class UserLockRelationService {
         lockID,
       },
     });
-    const users = [];
+    let users = [];
     allLockRelations.forEach((relation) => {
       users.push(this.userService.findByID(relation.userID));
     });
+    users = (await Promise.allSettled(users))
+      .map((promise) => (promise.status === 'fulfilled' ? promise.value : null))
+      .filter((user) => user);
     return users;
   }
 
@@ -86,15 +90,18 @@ export class UserLockRelationService {
         userID: user.id,
       },
     });
-    const locks = [];
+    let locks = [];
     allUserLockRelations.forEach((relation) => {
       locks.push(this.lockService.findByID(relation.lockID));
     });
-    await Promise.all(locks);
+    locks = (await Promise.allSettled(locks))
+      .map((promise) => (promise.status === 'fulfilled' ? promise.value : null))
+      .filter((lock) => lock);
     return locks;
   }
 
-  async findRelation(userEmail: string, lockID: string) {
+  async findRelation(findUserLockRelationDTO: FindUserLockRelationDTO) {
+    const { userEmail, lockID } = findUserLockRelationDTO;
     const user = await this.userService.findByEmail(userEmail);
     const lock = await this.lockService.findByID(lockID);
     const userLockRelation = await this.userLockRelationRepository.findOne({
@@ -109,23 +116,31 @@ export class UserLockRelationService {
   }
 
   async update(updateUserLockRelationDto: UpdateUserLockRelationDto) {
-    const relation = await this.findRelation(
-      updateUserLockRelationDto.userEmail,
-      updateUserLockRelationDto.lockID,
-    );
+    const relation = await this.findRelation({
+      userEmail: updateUserLockRelationDto.userEmail,
+      lockID: updateUserLockRelationDto.lockID,
+    });
     const updatedRelation: UserLockRelation = {
       userID: relation.userID,
       lockID: relation.lockID,
-      owner: updateUserLockRelationDto.owner || relation.owner,
+      owner: this.isNullValue(updateUserLockRelationDto.owner)
+        ? relation.owner
+        : updateUserLockRelationDto.owner,
     };
     await this.userLockRelationRepository.save(updatedRelation);
   }
 
-  async remove(userEmail: string, lockID: string) {
-    const relation = await this.findRelation(userEmail, lockID);
+  isNullValue(value: any) {
+    return value === null || value === undefined;
+  }
+
+  async remove(findUserLockRelationDTO: FindUserLockRelationDTO) {
+    const { userEmail, lockID } = findUserLockRelationDTO;
+    const relation = await this.findRelation({ userEmail, lockID });
     if (relation.owner) {
       const lockUsers = (await this.findAllLockUsersRelations(lockID)).filter(
-        (user) => user !== relation,
+        (user) =>
+          !(user.lockID === relation.lockID && user.userID === user.userID),
       );
       if (lockUsers.length > 0) {
         const lockUser = lockUsers[0];
@@ -159,13 +174,14 @@ export class UserLockRelationService {
     await Promise.allSettled(promises);
   }
 
-  async removeAllUserRelations(userID: string) {
-    const allRelations = await this.findAllUserLocksRelations(userID);
+  async removeAllUserRelations(userEmail: string) {
+    const user = await this.userService.findByEmail(userEmail);
+    const allRelations = await this.findAllUserLocksRelations(user.id);
     const promises = [];
     allRelations.forEach((relation) => {
       promises.push(
-        this.userLockRelationRepository.delete({
-          userID,
+        this.remove({
+          userEmail,
           lockID: relation.lockID,
         }),
       );

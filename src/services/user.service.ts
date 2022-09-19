@@ -24,7 +24,7 @@ export class UserService {
   async create(createUserDto: CreateUserDto) {
     const password = await hash(
       createUserDto.password,
-      process.env.SALT_ROUNDS,
+      +process.env.SALT_ROUNDS,
     );
     const newUser: Partial<User> = {
       email: createUserDto.email,
@@ -45,7 +45,7 @@ export class UserService {
       },
     });
     if (!user)
-      throw new NotFoundException('An user with this id could not be found');
+      throw new NotFoundException('An user with this email could not be found');
     return user;
   }
 
@@ -64,7 +64,10 @@ export class UserService {
     const user = await this.findByEmail(userEmail);
     let newPassword = null;
     if (updateUserDto.password) {
-      newPassword = await hash(updateUserDto.password, process.env.SALT_ROUNDS);
+      newPassword = await hash(
+        updateUserDto.password,
+        +process.env.SALT_ROUNDS,
+      );
     }
     const updatedUser: User = {
       id: user.id,
@@ -79,7 +82,7 @@ export class UserService {
 
   async remove(userEmail: string) {
     const user = await this.findByEmail(userEmail);
-    await this.userLockRelationService.removeAllUserRelations(user.id);
+    await this.userLockRelationService.removeAllUserRelations(user.email);
     await this.userRepository.delete({ email: userEmail });
   }
 }

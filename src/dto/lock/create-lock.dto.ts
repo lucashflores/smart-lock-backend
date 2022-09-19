@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsMACAddress, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateLockDto {
   @IsString()
@@ -11,5 +11,6 @@ export class CreateLockDto {
 
   @IsString()
   @IsNotEmpty()
+  @IsMACAddress()
   macAddress: string;
 }
