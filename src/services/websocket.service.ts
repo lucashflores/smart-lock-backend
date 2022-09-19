@@ -8,35 +8,12 @@ import {
   WebSocketServer as NestWebSocketServer,
 } from '@nestjs/websockets';
 
-@WebSocketGateway()
+@WebSocketGateway(81, { transports: ['websocket'] })
 export class WebsocketService
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-  private webSocket;
-  private webSocketFactory;
   @NestWebSocketServer() websocketServer: Server;
-  constructor() {
-    this.webSocketFactory = {
-      connectionTries: 3,
-      connect: function (url) {
-        var ws = new WebSocket(url);
-        ws.addEventListener('error', (e) => {
-          // readyState === 3 is CLOSED
-          if (e.target.readyState === 3) {
-            this.connectionTries--;
-
-            if (this.connectionTries > 0) {
-              setTimeout(() => this.connect(url), 5000);
-            } else {
-              throw new Error(
-                'Maximum number of connection trials has been reached',
-              );
-            }
-          }
-        });
-      },
-    };
-  }
+  constructor() {}
   handleConnection(client: WebSocket, ...args: any[]) {
     console.log(`Client connected: ${client}`);
   }
@@ -46,13 +23,11 @@ export class WebsocketService
   afterInit(server: Server) {
     console.log('Initialized');
     this.websocketServer.path = '/websocket';
-    this.webSocket = this.webSocketFactory.connect(
-      'ws://localhost:3000/websocket',
-    );
   }
 
   async sendEvent(event: string) {
-    console.log(this.websocketServer.path);
-    this.websocketServer.emit('msgToClient', 'test');
+    this.websocketServer.clients.forEach((client) => {
+      client.send('test');
+    });
   }
 }
