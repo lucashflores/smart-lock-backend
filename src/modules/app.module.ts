@@ -17,6 +17,7 @@ import { UserLockRelationModule } from './user-lock-relation.module';
 import { UserLockRelationController } from 'src/controllers/user-lock-relation.controller';
 import { WebsocketModule } from './websocket.module';
 import { WebsocketService } from 'src/services/websocket.service';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -40,6 +41,9 @@ import { WebsocketService } from 'src/services/websocket.service';
       synchronize: true,
     }),
     TypeOrmModule.forFeature([User, Lock, UserLockRelation]),
+    JwtModule.register({
+      secret: process.env.SECRET,
+    }),
   ],
   controllers: [
     AppController,

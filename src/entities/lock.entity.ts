@@ -1,4 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Relation,
+  Unique,
+} from 'typeorm';
+import { UserLockRelation } from './user-lock-relation.entity';
 
 @Entity({ name: 'locks' })
 @Unique(['name'])
@@ -9,9 +17,11 @@ export class Lock {
   @Column()
   name: string;
 
-  @Column({ name: 'mac_address' })
-  macAddress: string;
-
   @Column()
   websocket: string;
+
+  @OneToMany((type) => UserLockRelation, (relation) => relation.lock, {
+    cascade: ['remove'],
+  })
+  relations?: UserLockRelation[];
 }

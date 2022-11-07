@@ -4,7 +4,7 @@ export class FindUserLockRelationDTO {
   @IsString()
   @IsEmail()
   @IsNotEmpty()
-  userEmail: string;
+  userID: string;
 
   @IsString()
   @IsNotEmpty()

@@ -8,9 +8,4 @@ export class CreateLockDto {
   @IsString()
   @IsNotEmpty()
   websocket: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @IsMACAddress()
-  macAddress: string;
 }

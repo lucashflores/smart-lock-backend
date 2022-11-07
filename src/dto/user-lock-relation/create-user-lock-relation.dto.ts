@@ -20,7 +20,7 @@ export class CreateUserLockRelationDto {
   @IsString()
   @IsEmail()
   @IsNotEmpty()
-  userEmail: string;
+  userID: string;
 
   @IsBoolean()
   @IsOptional()

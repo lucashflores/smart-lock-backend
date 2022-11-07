@@ -8,11 +8,14 @@ import {
   Query,
   Put,
   HttpCode,
+  UseGuards,
 } from '@nestjs/common';
 import { UserLockRelationService } from '../services/user-lock-relation.service';
 import { CreateUserLockRelationDto } from '../dto/user-lock-relation/create-user-lock-relation.dto';
 import { UpdateUserLockRelationDto } from '../dto/user-lock-relation/update-user-lock-relation.dto';
 import { FindUserLockRelationDTO } from 'src/dto/user-lock-relation/find-user-lock-relation.dto';
+import { OwnerGuard } from 'src/guards/owner.guard';
+import { UserGuard } from 'src/guards/user.guard';
 
 @Controller('v1/relations')
 export class UserLockRelationController {
@@ -20,6 +23,7 @@ export class UserLockRelationController {
     private readonly userLockRelationService: UserLockRelationService,
   ) {}
 
+  @UseGuards(OwnerGuard)
   @Post('')
   async create(@Body() createUserLockRelationDto: CreateUserLockRelationDto) {
     return {
@@ -30,38 +34,14 @@ export class UserLockRelationController {
     };
   }
 
-  @Get('/user/:user_email')
-  async findAllUserLocks(@Param('user_email') userEmail: string) {
-    return {
-      status: 'OK',
-      data: await this.userLockRelationService.findAllUserLocks(userEmail),
-    };
-  }
-
-  @Get('/lock/:lock_id')
-  async findAll(@Param('lock_id') lockID: string) {
-    return {
-      status: 'OK',
-      data: await this.userLockRelationService.findAllLockUsers(lockID),
-    };
-  }
-
-  @Get('')
-  async findOne(@Query() findUserLockRelationDTO: FindUserLockRelationDTO) {
-    return {
-      status: 'OK',
-      data: await this.userLockRelationService.findRelation(
-        findUserLockRelationDTO,
-      ),
-    };
-  }
-
+  @UseGuards(OwnerGuard)
   @Put('')
   @HttpCode(204)
   async update(@Body() updateUserLockRelationDto: UpdateUserLockRelationDto) {
     await this.userLockRelationService.update(updateUserLockRelationDto);
   }
 
+  @UseGuards(UserGuard)
   @Delete('')
   async remove(@Query() findUserLockRelationDTO: FindUserLockRelationDTO) {
     await this.userLockRelationService.remove(findUserLockRelationDTO);

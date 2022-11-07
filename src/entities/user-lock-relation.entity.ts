@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import { Lock } from './lock.entity';
+import { User } from './user.entity';
 
 @Entity({ name: 'user-lock-relations' })
 export class UserLockRelation {
@@ -10,4 +12,12 @@ export class UserLockRelation {
 
   @Column()
   owner: boolean;
+
+  @ManyToOne((type) => Lock, (lock) => lock.relations)
+  @JoinColumn({ name: 'lock_id' })
+  lock?: Lock;
+
+  @ManyToOne((type) => User, (user) => user.relations)
+  @JoinColumn({ name: 'user_id' })
+  user?: User;
 }

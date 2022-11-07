@@ -12,5 +12,5 @@ export class UpdateUserLockRelationDto extends PartialType(
   @IsString()
   @IsEmail()
   @IsNotEmpty()
-  userEmail: string;
+  userID: string;
 }

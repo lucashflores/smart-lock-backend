@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Header, Post, Headers } from '@nestjs/common';
 import { AuthDTO } from 'src/dto/app/auth.dto';
 import { AppService } from '../services/app.service';
 
@@ -15,7 +15,15 @@ export class AppController {
   async authenticate(@Body() authDTO: AuthDTO) {
     return {
       status: 'OK',
-      authenticated: await this.appService.authenticate(authDTO),
+      token: await this.appService.authenticate(authDTO),
+    };
+  }
+
+  @Post('/verify')
+  async verifyToken(@Headers('Authorization') token: string) {
+    return {
+      status: 'OK',
+      data: await this.appService.verifyToken(token),
     };
   }
 }

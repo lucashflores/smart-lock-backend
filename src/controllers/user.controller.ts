@@ -7,10 +7,12 @@ import {
   Delete,
   Put,
   HttpCode,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import { CreateUserDto } from '../dto/user/create-user.dto';
 import { UpdateUserDto } from '../dto/user/update-user.dto';
+import { UserGuard } from 'src/guards/user.guard';
 
 @Controller('v1/users')
 export class UserController {
@@ -24,14 +26,7 @@ export class UserController {
     };
   }
 
-  @Get()
-  async findAll() {
-    return {
-      status: 'OK',
-      data: await this.userService.findAll(),
-    };
-  }
-
+  @UseGuards(UserGuard)
   @Get(':user_email')
   async findOne(@Param('user_email') userEmail: string) {
     return {
@@ -40,6 +35,7 @@ export class UserController {
     };
   }
 
+  @UseGuards(UserGuard)
   @Put(':user_email')
   @HttpCode(204)
   async update(
@@ -49,8 +45,18 @@ export class UserController {
     await this.userService.update(userEmail, updateUserDto);
   }
 
+  @UseGuards(UserGuard)
   @Delete(':user_email')
   async remove(@Param('user_email') userEmail: string) {
     await this.userService.remove(userEmail);
+  }
+
+  @UseGuards(UserGuard)
+  @Get('/locks/:user_id')
+  async findAllUserLocks(@Param('user_id') userId: string) {
+    return {
+      status: 'OK',
+      data: await this.userService.findAllUserLocks(userId),
+    };
   }
 }

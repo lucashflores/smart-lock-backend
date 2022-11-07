@@ -17,8 +17,6 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @Inject(forwardRef(() => UserLockRelationService))
-    private readonly userLockRelationService: UserLockRelationService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -34,8 +32,16 @@ export class UserService {
     return await this.userRepository.save(newUser);
   }
 
-  async findAll() {
-    return await this.userRepository.find({});
+  async findAllUserLocks(userID: string) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userID,
+      },
+      relations: ['relations', 'relations.lock'],
+    });
+    return user.relations.map((relation) => {
+      return { ...relation.lock, owner: relation.owner };
+    });
   }
 
   async findByEmail(userEmail: string) {
@@ -46,17 +52,6 @@ export class UserService {
     });
     if (!user)
       throw new NotFoundException('An user with this email could not be found');
-    return user;
-  }
-
-  async findByID(id: string) {
-    const user = await this.userRepository.findOne({
-      where: {
-        id,
-      },
-    });
-    if (!user)
-      throw new NotFoundException('An user with this id could not be found');
     return user;
   }
 
@@ -82,7 +77,6 @@ export class UserService {
 
   async remove(userEmail: string) {
     const user = await this.findByEmail(userEmail);
-    await this.userLockRelationService.removeAllUserRelations(user.email);
     await this.userRepository.delete({ email: userEmail });
   }
 }

@@ -1,5 +1,4 @@
 import { Server, WebSocket } from 'ws';
-import { createServer } from 'http';
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -8,7 +7,7 @@ import {
   WebSocketServer as NestWebSocketServer,
 } from '@nestjs/websockets';
 
-@WebSocketGateway(81, { transports: ['websocket'] })
+@WebSocketGateway(8080, { transports: ['websocket'] })
 export class WebsocketService
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
@@ -23,11 +22,12 @@ export class WebsocketService
   afterInit(server: Server) {
     console.log('Initialized');
     this.websocketServer.path = '/websocket';
+    this.websocketServer.setMaxListeners(50);
   }
 
-  async sendEvent(event: string) {
+  async sendUnlockEvent(lockId: string) {
     this.websocketServer.clients.forEach((client) => {
-      client.send('test');
+      client.send(`unlock ${lockId}`);
     });
   }
 }
