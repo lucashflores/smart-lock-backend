@@ -16,7 +16,6 @@ WORKDIR "/smart-lock-backend"
 
 COPY --from=builder /smart-lock-backend/package.json ./package.json
 COPY --from=builder /smart-lock-backend/dist ./dist
-COPY --from=builder /smart-lock-backend/test/json ./test/json
 COPY --from=builder /smart-lock-backend/node_modules ./node_modules
 
 CMD ["sh", "-c", "yarn start:prod"]
