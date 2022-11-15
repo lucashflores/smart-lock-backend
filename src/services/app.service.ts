@@ -27,9 +27,7 @@ export class AppService {
     const user = await this.userService.findByEmail(authDTO.email);
     const isPasswordCorrect = await compare(authDTO.password, user.password);
     if (!isPasswordCorrect) throw new UnauthorizedException('Wrong password');
-    const locks = await this.userLockRelationService.findAllUserLocks(
-      authDTO.email,
-    );
+    const locks = await this.userService.findAllUserLocks(authDTO.email);
     user['locks'] = locks;
     delete user.password;
     const accessToken = this.jwtService.sign(user, {
