@@ -38,7 +38,7 @@ import { JwtModule } from '@nestjs/jwt';
       entities: [User, Lock, UserLockRelation],
       database: process.env.PGDATABASE,
       schema: 'smart_lock',
-      synchronize: true,
+      synchronize: false,
     }),
     TypeOrmModule.forFeature([User, Lock, UserLockRelation]),
     JwtModule.register({
