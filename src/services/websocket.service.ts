@@ -7,7 +7,7 @@ import {
   WebSocketServer as NestWebSocketServer,
 } from '@nestjs/websockets';
 
-@WebSocketGateway(8000, { transports: ['websocket'] })
+@WebSocketGateway({ transports: ['websocket'] })
 export class WebsocketService
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
