@@ -13,11 +13,15 @@ export class UserLockRelation {
   @Column()
   owner: boolean;
 
-  @ManyToOne((type) => Lock, (lock) => lock.relations)
+  @ManyToOne((type) => Lock, (lock) => lock.relations, {
+    cascade: ['remove'],
+  })
   @JoinColumn({ name: 'lock_id' })
   lock?: Lock;
 
-  @ManyToOne((type) => User, (user) => user.relations)
+  @ManyToOne((type) => User, (user) => user.relations, {
+    cascade: ['remove'],
+  })
   @JoinColumn({ name: 'user_id' })
   user?: User;
 }

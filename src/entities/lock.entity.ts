@@ -17,11 +17,12 @@ export class Lock {
   @Column()
   name: string;
 
+  @Column({ name: 'command_hash' })
+  commandHash: string;
+
   @Column()
   websocket: string;
 
-  @OneToMany((type) => UserLockRelation, (relation) => relation.lock, {
-    cascade: ['remove'],
-  })
+  @OneToMany((type) => UserLockRelation, (relation) => relation.lock)
   relations?: UserLockRelation[];
 }

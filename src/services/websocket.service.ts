@@ -25,9 +25,9 @@ export class WebsocketService
     this.websocketServer.setMaxListeners(50);
   }
 
-  async sendUnlockEvent(lockId: string) {
+  async sendUnlockEvent(commandHash: string) {
     this.websocketServer.clients.forEach((client) => {
-      client.send(`unlock ${lockId}`);
+      client.send(`unlock ${commandHash}`);
     });
   }
 }

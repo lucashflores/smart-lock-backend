@@ -27,8 +27,20 @@ export class LockService {
     const newLock: Partial<Lock> = {
       name: createLockDto.name,
       websocket: createLockDto.websocket,
+      commandHash: this.makeHash(15),
     };
     return await this.lockRepository.save(newLock);
+  }
+
+  private makeHash(length: number) {
+    var result = '';
+    var characters =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
   }
 
   async findByID(id: string) {
@@ -51,12 +63,14 @@ export class LockService {
       id: lock.id,
       websocket: updateLockDto.websocket || lock.websocket,
       name: updateLockDto.name || lock.name,
+      commandHash: lock.commandHash,
     };
     await this.lockRepository.save(updatedLock);
   }
 
   async sendUnlockEvent(lockId: string) {
-    await this.websocketService.sendUnlockEvent(lockId);
+    const lock = await this.findByID(lockId);
+    await this.websocketService.sendUnlockEvent(lock.commandHash);
   }
 
   async unlock(lockID: string) {

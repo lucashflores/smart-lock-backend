@@ -69,14 +69,12 @@ export class UserService {
       email: updateUserDto.email || user.email,
       name: updateUserDto.name || user.name,
       password: newPassword || user.password,
-      fingerprint: updateUserDto.fingerprint || user.fingerprint,
-      face: updateUserDto.face || user.face,
     };
     await this.userRepository.save(updatedUser);
   }
 
   async remove(userEmail: string) {
     const user = await this.findByEmail(userEmail);
-    await this.userRepository.delete({ email: userEmail });
+    await this.userRepository.remove(user);
   }
 }

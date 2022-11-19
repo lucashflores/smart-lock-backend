@@ -15,14 +15,6 @@ export class User {
   @Column()
   password: string;
 
-  @Column({ default: '' })
-  fingerprint: string;
-
-  @Column({ default: '' })
-  face: string;
-
-  @OneToMany((type) => UserLockRelation, (relation) => relation.user, {
-    cascade: ['remove'],
-  })
+  @OneToMany((type) => UserLockRelation, (relation) => relation.user)
   relations?: UserLockRelation[];
 }
