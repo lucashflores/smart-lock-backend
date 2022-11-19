@@ -16,19 +16,18 @@ export class LockGuard implements CanActivate {
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest();
     const lockId = request.params['lock_id'] || request.params['id'];
-    const jwt = request.headers['Authorization'];
+    const jwt = request.headers['authorization'];
     if (!jwt) throw new UnauthorizedException('Not Authorized');
     if (!jwt.includes('Bearer '))
       throw new UnauthorizedException('Not Authorized');
     const encodedToken = jwt.replace(/Bearer\s/, '');
     try {
-      verify(encodedToken, process.env.JWT_SECRET, {
+      verify(encodedToken, process.env.SECRET, {
         complete: true,
       });
     } catch (err) {
       throw new UnauthorizedException('Not Authorized');
     }
-
     const decodedJwt = decode(encodedToken, {
       complete: true,
     });

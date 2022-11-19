@@ -59,8 +59,7 @@ export class LockService {
     await this.websocketService.sendUnlockEvent(lockId);
   }
 
-  async unlock(lockID: string, userEmail: string) {
-    // await this.userLockRelationService.findRelation({ userEmail, lockID });
+  async unlock(lockID: string) {
     await this.sendUnlockEvent(lockID);
   }
 

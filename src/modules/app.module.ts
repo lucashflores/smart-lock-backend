@@ -37,7 +37,7 @@ import { JwtModule } from '@nestjs/jwt';
       port: +process.env.PGPORT,
       entities: [User, Lock, UserLockRelation],
       database: process.env.PGDATABASE,
-      schema: 'smart_lock',
+      schema: 'smart-lock',
       synchronize: false,
     }),
     TypeOrmModule.forFeature([User, Lock, UserLockRelation]),

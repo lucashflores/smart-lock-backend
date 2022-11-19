@@ -25,7 +25,7 @@ export class UserGuard implements CanActivate {
       throw new UnauthorizedException('Not Authorized');
     const encodedToken = jwt.replace(/Bearer\s/, '');
     try {
-      verify(encodedToken, process.env.JWT_SECRET, {
+      verify(encodedToken, process.env.SECRET, {
         complete: true,
       });
     } catch (err) {
@@ -42,6 +42,7 @@ export class UserGuard implements CanActivate {
     const formattedPayload = payload as {
       user: Partial<User>;
     };
+    request.user = payload.user;
     if (
       formattedPayload.user.email === user ||
       formattedPayload.user.id === user

@@ -18,7 +18,6 @@ export class CreateUserLockRelationDto {
   lockID: string;
 
   @IsString()
-  @IsEmail()
   @IsNotEmpty()
   userID: string;
 

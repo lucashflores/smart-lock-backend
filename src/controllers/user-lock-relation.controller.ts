@@ -23,7 +23,6 @@ export class UserLockRelationController {
     private readonly userLockRelationService: UserLockRelationService,
   ) {}
 
-  @UseGuards(OwnerGuard)
   @Post('')
   async create(@Body() createUserLockRelationDto: CreateUserLockRelationDto) {
     return {

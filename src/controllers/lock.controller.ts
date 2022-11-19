@@ -34,7 +34,7 @@ export class LockController {
   @UseGuards(LockGuard)
   @Post('/unlock/:id')
   async unlock(@Param('id') id: string) {
-    await this.lockService.unlock(id, '');
+    await this.lockService.unlock(id);
   }
 
   @UseGuards(OwnerGuard)
