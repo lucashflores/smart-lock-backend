@@ -9,7 +9,6 @@ import {
 import { UserLockRelation } from './user-lock-relation.entity';
 
 @Entity({ name: 'locks' })
-@Unique(['name'])
 export class Lock {
   @PrimaryGeneratedColumn('uuid')
   id: string;
