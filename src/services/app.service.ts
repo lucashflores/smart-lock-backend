@@ -41,7 +41,7 @@ export class AppService {
 
   async verifyToken(token: string) {
     try {
-      const verifiedToken = verify(token, process.env.JWT_SECRET, {
+      const verifiedToken = verify(token, process.env.SECRET, {
         complete: true,
       });
       if (typeof verifiedToken.payload === 'string') return false;
