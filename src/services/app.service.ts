@@ -50,4 +50,22 @@ export class AppService {
       throw new UnauthorizedException(error);
     }
   }
+
+  async refreshToken(token: string) {
+    try {
+      const payload = this.verifyToken(token);
+      const locks = await this.userService.findAllUserLocks(payload['user'].id);
+      payload['user']['locks'] = locks;
+      delete payload['user'].password;
+      const accessToken = this.jwtService.sign(
+        { user: payload['user'] },
+        {
+          expiresIn: +process.env.JWT_EXP_H,
+        },
+      );
+      return accessToken;
+    } catch (error) {
+      throw new UnauthorizedException(error);
+    }
+  }
 }

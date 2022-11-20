@@ -26,4 +26,12 @@ export class AppController {
       data: await this.appService.verifyToken(token),
     };
   }
+
+  @Post('/refresh')
+  async refreshToken(@Headers('Authorization') token: string) {
+    return {
+      status: 'OK',
+      data: await this.appService.refreshToken(token),
+    };
+  }
 }
