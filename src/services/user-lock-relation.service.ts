@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   forwardRef,
   Inject,
   Injectable,
@@ -29,7 +30,11 @@ export class UserLockRelationService {
       userID: createUserLockRelationDto.userID,
       owner: createUserLockRelationDto.owner || false,
     };
-    return await this.userLockRelationRepository.save(relation);
+    try {
+      return await this.userLockRelationRepository.save(relation);
+    } catch (err) {
+      throw new ConflictException('This relation already exists');
+    }
   }
 
   async checkIfLockHasOwner(lockID: string) {
@@ -58,7 +63,11 @@ export class UserLockRelationService {
         ? relation.owner
         : updateUserLockRelationDto.owner,
     };
-    await this.userLockRelationRepository.save(updatedRelation);
+    try {
+      await this.userLockRelationRepository.save(updatedRelation);
+    } catch (err) {
+      throw new ConflictException('This relation already exists');
+    }
   }
 
   isNullValue(value: any) {

@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   forwardRef,
   Inject,
   Injectable,
@@ -29,7 +30,11 @@ export class LockService {
       websocket: createLockDto.websocket,
       commandHash: this.makeHash(15),
     };
-    return await this.lockRepository.save(newLock);
+    try {
+      return await this.lockRepository.save(newLock);
+    } catch (err) {
+      throw new ConflictException('A lock with this name already exists');
+    }
   }
 
   private makeHash(length: number) {
@@ -65,7 +70,11 @@ export class LockService {
       name: updateLockDto.name || lock.name,
       commandHash: lock.commandHash,
     };
-    await this.lockRepository.save(updatedLock);
+    try {
+      await this.lockRepository.save(updatedLock);
+    } catch (err) {
+      throw new ConflictException('A lock with this name already exists');
+    }
   }
 
   async sendUnlockEvent(lockId: string) {

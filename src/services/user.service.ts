@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   forwardRef,
   Inject,
   Injectable,
@@ -29,7 +30,11 @@ export class UserService {
       name: createUserDto.name,
       password,
     };
-    return await this.userRepository.save(newUser);
+    try {
+      return await this.userRepository.save(newUser);
+    } catch (err) {
+      throw new ConflictException('An user with this email already exists');
+    }
   }
 
   async findAllUserLocks(userID: string) {
@@ -70,7 +75,11 @@ export class UserService {
       name: updateUserDto.name || user.name,
       password: newPassword || user.password,
     };
-    await this.userRepository.save(updatedUser);
+    try {
+      await this.userRepository.save(updatedUser);
+    } catch (err) {
+      throw new ConflictException('An user with this email already exists');
+    }
   }
 
   async remove(userEmail: string) {

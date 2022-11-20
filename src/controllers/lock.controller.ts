@@ -35,6 +35,10 @@ export class LockController {
   @Post('/unlock/:id')
   async unlock(@Param('id') id: string) {
     await this.lockService.unlock(id);
+    return {
+      status: 'OK',
+      message: 'Successfully unlocked the requested lock',
+    };
   }
 
   @UseGuards(OwnerGuard)
