@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Header, Post, Headers } from '@nestjs/common';
 import { AuthDTO } from 'src/dto/app/auth.dto';
+import { InviteUserDTO } from 'src/dto/app/invite.dto';
 import { AppService } from '../services/app.service';
 
 @Controller('v1')
@@ -32,6 +33,15 @@ export class AppController {
     return {
       status: 'OK',
       data: await this.appService.refreshToken(token),
+    };
+  }
+
+  @Post('/invite')
+  async inviteUser(@Body() inviteUserDTO: InviteUserDTO) {
+    await this.appService.inviteUser(inviteUserDTO);
+    return {
+      status: 'OK',
+      message: 'Sucessfully invited user',
     };
   }
 }

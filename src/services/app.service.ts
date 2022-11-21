@@ -6,6 +6,7 @@ import { UserService } from './user.service';
 import { UserLockRelationService } from './user-lock-relation.service';
 import { JwtService } from '@nestjs/jwt';
 import { verify } from 'jsonwebtoken';
+import { InviteUserDTO } from 'src/dto/app/invite.dto';
 
 @Injectable()
 export class AppService {
@@ -67,5 +68,14 @@ export class AppService {
     } catch (error) {
       throw new UnauthorizedException(error);
     }
+  }
+
+  async inviteUser(inviteUserDTO: InviteUserDTO) {
+    const user = await this.userService.findByEmail(inviteUserDTO.email);
+    await this.userLockRelationService.create({
+      userID: user.id,
+      lockID: inviteUserDTO.lockID,
+      owner: false,
+    });
   }
 }
