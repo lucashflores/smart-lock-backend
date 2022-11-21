@@ -53,7 +53,7 @@ export class AppService {
 
   async refreshToken(token: string) {
     try {
-      const payload = this.verifyToken(token);
+      const payload = await this.verifyToken(token);
       const locks = await this.userService.findAllUserLocks(payload['user'].id);
       payload['user']['locks'] = locks;
       delete payload['user'].password;
