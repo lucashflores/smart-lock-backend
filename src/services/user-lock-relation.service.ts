@@ -29,7 +29,7 @@ export class UserLockRelationService {
     const relation: UserLockRelation = {
       lockID: createUserLockRelationDto.lockID,
       userID: createUserLockRelationDto.userID,
-      owner: (createUserLockRelationDto.owner && !hasOwner) || false,
+      owner: hasOwner ? false : createUserLockRelationDto.owner,
     };
     try {
       return await this.userLockRelationRepository.save(relation);
@@ -44,10 +44,11 @@ export class UserLockRelationService {
         lockID,
       },
     });
+    let hasOwner = false;
     relations.forEach((relation) => {
-      if (relation.owner) return true;
+      if (relation.owner) hasOwner = true;
     });
-    return false;
+    return hasOwner;
   }
 
   async update(updateUserLockRelationDto: UpdateUserLockRelationDto) {
