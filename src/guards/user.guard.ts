@@ -18,7 +18,9 @@ export class UserGuard implements CanActivate {
     const user =
       request.params['user_email'] ||
       request.params['user_id'] ||
-      request.params['userID'];
+      request.params['userID'] ||
+      request.query['userID'];
+    let lockId = request.query['lockID'];
     const jwt = request.headers['authorization'];
     if (!jwt) throw new UnauthorizedException('Not Authorized');
     if (!jwt.includes('Bearer '))
@@ -42,10 +44,17 @@ export class UserGuard implements CanActivate {
     const formattedPayload = payload as {
       user: Partial<User>;
     };
+    let owner = false;
+    if (lockId) {
+      owner = formattedPayload.user['locks'].find(
+        (lock: Lock) => lock.id === lockId,
+      )['owner'];
+    }
     request.user = payload.user;
     if (
       formattedPayload.user.email === user ||
-      formattedPayload.user.id === user
+      formattedPayload.user.id === user ||
+      owner
     )
       return true;
     throw new UnauthorizedException('Not Authorized');
