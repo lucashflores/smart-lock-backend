@@ -16,7 +16,7 @@ export class OwnerGuard implements CanActivate {
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest();
     const lockId = request.params['lock_id'] || request.body['lockID'];
-    const jwt = request.headers['Authorization'];
+    const jwt = request.headers['authorization'];
     if (!jwt) throw new UnauthorizedException('Not Authorized');
     if (!jwt.includes('Bearer '))
       throw new UnauthorizedException('Not Authorized');
