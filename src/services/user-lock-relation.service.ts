@@ -23,12 +23,13 @@ export class UserLockRelationService {
     private readonly userLockRelationRepository: Repository<UserLockRelation>,
   ) {}
   async create(createUserLockRelationDto: CreateUserLockRelationDto) {
-    if (createUserLockRelationDto.owner)
-      await this.checkIfLockHasOwner(createUserLockRelationDto.lockID);
+    const hasOwner = await this.checkIfLockHasOwner(
+      createUserLockRelationDto.lockID,
+    );
     const relation: UserLockRelation = {
       lockID: createUserLockRelationDto.lockID,
       userID: createUserLockRelationDto.userID,
-      owner: createUserLockRelationDto.owner || false,
+      owner: (createUserLockRelationDto.owner && !hasOwner) || false,
     };
     try {
       return await this.userLockRelationRepository.save(relation);
