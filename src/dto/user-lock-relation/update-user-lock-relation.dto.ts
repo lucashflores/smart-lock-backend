@@ -1,5 +1,11 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { IsString, IsEmail, IsNotEmpty } from 'class-validator';
+import {
+  IsString,
+  IsEmail,
+  IsNotEmpty,
+  IsBoolean,
+  IsOptional,
+} from 'class-validator';
 import { CreateUserLockRelationDto } from './create-user-lock-relation.dto';
 
 export class UpdateUserLockRelationDto extends PartialType(
@@ -13,4 +19,9 @@ export class UpdateUserLockRelationDto extends PartialType(
   @IsEmail()
   @IsNotEmpty()
   userID: string;
+
+  @IsBoolean()
+  @IsEmail()
+  @IsNotEmpty()
+  owner: boolean;
 }

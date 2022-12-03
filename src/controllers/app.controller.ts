@@ -1,6 +1,15 @@
-import { Body, Controller, Get, Header, Post, Headers } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Header,
+  Post,
+  Headers,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthDTO } from 'src/dto/app/auth.dto';
 import { InviteUserDTO } from 'src/dto/app/invite.dto';
+import { OwnerGuard } from 'src/guards/owner.guard';
 import { AppService } from '../services/app.service';
 
 @Controller('v1')
@@ -36,6 +45,7 @@ export class AppController {
     };
   }
 
+  @UseGuards(OwnerGuard)
   @Post('/invite')
   async inviteUser(@Body() inviteUserDTO: InviteUserDTO) {
     await this.appService.inviteUser(inviteUserDTO);

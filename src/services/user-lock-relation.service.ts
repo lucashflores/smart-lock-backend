@@ -32,7 +32,7 @@ export class UserLockRelationService {
       owner: hasOwner ? false : createUserLockRelationDto.owner,
     };
     try {
-      return await this.userLockRelationRepository.save(relation);
+      return await this.userLockRelationRepository.insert(relation);
     } catch (err) {
       throw new ConflictException('This relation already exists');
     }
