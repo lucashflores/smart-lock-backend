@@ -16,12 +16,10 @@ export class UpdateUserLockRelationDto extends PartialType(
   lockID: string;
 
   @IsString()
-  @IsEmail()
   @IsNotEmpty()
   userID: string;
 
   @IsBoolean()
-  @IsEmail()
   @IsNotEmpty()
   owner: boolean;
 }
