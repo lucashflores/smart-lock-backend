@@ -52,18 +52,23 @@ export class UserLockRelationService {
   }
 
   async update(updateUserLockRelationDto: UpdateUserLockRelationDto) {
+    const hasOwner = await this.checkIfLockHasOwner(
+      updateUserLockRelationDto.lockID,
+    );
     const relation = await this.userLockRelationRepository.findOne({
       where: {
         userID: updateUserLockRelationDto.userID,
         lockID: updateUserLockRelationDto.lockID,
       },
     });
+    if (!relation) throw new NotFoundException('Relation not found');
     const updatedRelation: UserLockRelation = {
       userID: relation.userID,
       lockID: relation.lockID,
-      owner: this.isNullValue(updateUserLockRelationDto.owner)
-        ? relation.owner
-        : updateUserLockRelationDto.owner,
+      owner:
+        this.isNullValue(updateUserLockRelationDto.owner) || hasOwner
+          ? relation.owner
+          : updateUserLockRelationDto.owner,
     };
     try {
       await this.userLockRelationRepository.save(updatedRelation);
